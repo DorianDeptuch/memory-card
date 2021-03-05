@@ -1,3 +1,8 @@
+@font-face {
+  font-family: pokemonFont;
+  src: url("./Fonts/PokemonSolid.ttf") format("truetype");
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -9,19 +14,47 @@ body {
   width: 99vw;
 }
 
+h1,
+h3 {
+  font-family: "pokemonFont";
+  color: #ffca08;
+  text-shadow: 3px 0px 0px #2a74f9, -3px 0px 0px #2a74f9, 0px 3px 0px #2a74f9,
+    0px -3px 0px #2a74f9, -5px 5px #11298b;
+  letter-spacing: 0.25rem;
+}
+
 .titleDiv {
-  border: 1px solid red;
+  height: 12rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-image: url(https://i.pinimg.com/originals/9f/47/69/9f4769bffe8e4b70f48b1dd0546257c4.jpg);
+}
+
+.titleDiv > h1 {
+  transform: translateY(-150px);
 }
 
 .scoreDiv {
-  border: 1px solid red;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  border-top: 2px solid black;
+  border-bottom: 2px solid black;
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 5;
+}
+.scoreDiv > h3 {
+  margin: 10px 50px 10px 50px;
 }
 
 .gameDiv {
   height: 100%;
   width: 100%;
   background: gray;
-  border: 1px solid red;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -30,11 +63,165 @@ body {
 .cardDiv {
   height: 5rem;
   width: 5rem;
-  margin: 1rem;
-  background: cornsilk;
+  margin: 0.25rem;
+  border-radius: 50%;
+  background: linear-gradient(
+    180deg,
+    salmon 0%,
+    salmon 50%,
+    white 50%,
+    white 100%
+  );
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid blue;
-  font-size: 4rem;
+  border: 1px solid black;
+  font-size: 0.5rem;
+}
+.mewDiv {
+  height: 5rem;
+  width: 5rem;
+  margin: 0.25rem;
+  border-radius: 50%;
+  background: linear-gradient(
+    180deg,
+    salmon 0%,
+    salmon 50%,
+    white 50%,
+    white 100%
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid black;
+  font-size: 0.5rem;
+  animation-name: mewMove;
+  animation-duration: 3s;
+  animation-iteration-count: infinite;
+}
+
+.cardDiv:hover {
+  cursor: pointer !important;
+  animation-name: rotate;
+  animation-duration: 1s;
+  animation-iteration-count: infinite;
+}
+
+.gameOverDiv,
+.startGameScreenDiv,
+.gameCompleteDiv {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+button {
+  height: 5rem;
+  width: 13rem;
+  font-family: "pokemonFont";
+  font-size: 1.5rem;
+  border-radius: 20px;
+  color: #ffca08;
+  text-shadow: 3px 0px 0px #2a74f9, -3px 0px 0px #2a74f9, 0px 3px 0px #2a74f9,
+    0px -3px 0px #2a74f9, -5px 5px #11298b;
+  border: solid 4px #2a74f9;
+  box-shadow: -4px 4px 0 0 #11298b;
+  transition: transform 0.33s;
+}
+
+button:hover {
+  transform: scale(1.1);
+  cursor: pointer;
+}
+
+.center {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.left-battleSlide,
+.right-battleSlide {
+  position: absolute;
+  height: 50vh;
+  background: black;
+  width: 150vw;
+  overflow: hidden !important;
+  z-index: 10;
+}
+
+.left-battleSlide {
+  top: 0;
+  left: -150vw;
+  animation-name: leftToRight;
+  animation-duration: 3s;
+  animation-timing-function: linear;
+}
+
+.right-battleSlide {
+  height: 80vh;
+  right: -150vw;
+  bottom: -30vh;
+  overflow: hidden;
+  animation-name: rightToLeft;
+  animation-duration: 3s;
+  animation-timing-function: linear;
+}
+
+.hide {
+  display: none;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotateZ(0deg);
+  }
+  25% {
+    transform: rotateZ(10deg);
+  }
+  75% {
+    transform: rotateZ(-10deg);
+  }
+  100% {
+    transform: rotateZ(0deg);
+  }
+}
+
+@keyframes mewMove {
+  0% {
+    transform: translateX(0px);
+  }
+  25% {
+    transform: translateX(300px);
+  }
+  50% {
+    transform: translateX(0px);
+  }
+  75% {
+    transform: translateX(-300px);
+  }
+  100% {
+    transform: translateX(0px);
+  }
+}
+
+@keyframes leftToRight {
+  0% {
+    transform: translateX(0px);
+  }
+  100% {
+    transform: translateX(3500px);
+  }
+}
+
+@keyframes rightToLeft {
+  0% {
+    transform: translateX(0px);
+  }
+  100% {
+    transform: translateX(-3500px);
+  }
 }

@@ -4,61 +4,54 @@ import Score from "./components/Score";
 import Card from "./components/Card";
 import Title from "./components/Title";
 import GameOver from "./components/GameOver";
+import StartGameScreen from "./components/StartGameScreen";
+import GameComplete from "./components/GameComplete";
+import BattleSlides from "./components/BattleSlides";
 
 function App() {
   const [score, setScore] = useState(0);
   const [highScore, setHighScore] = useState(0);
-  const [cards, setcards] = useState(SAMPLE_POKEMON);
-  const [card1, setCard1] = useState(1);
-  const [card2, setCard2] = useState(2);
-  const [card3, setCard3] = useState(3);
-  const [card4, setCard4] = useState(4);
-  const [card5, setCard5] = useState(5);
-  const [card6, setCard6] = useState(6);
+  // const [isLoading, setIsLoading] = useState(false);
+  const [pokemon, setPokemon] = useState([]);
+  const [pokemonImages, setPokemonImages] = useState([]);
+  const [startGame, setStartGame] = useState(false);
+  const [caughtAllPokemon, setCaughtAllPokemon] = useState(false);
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
+  const [totalTime, setTotalTime] = useState("");
+  const [battleSlideAnimation, setBattleSlideAnimation] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const [selectedCards, setSelectedCards] = useState([]);
-  const [cardOrder, setCardOrder] = useState([
-    card1,
-    card2,
-    card3,
-    card4,
-    card5,
-    card6,
-  ]);
 
   useEffect(() => {
+    // setIsLoading(true);
+    let pokeNamesArray = [];
+    let pokeImagesArray = [];
+
     const fetchData = async () => {
       try {
         // const controller = new AbortController();
 
-        for (let i = 1; i < 150; i++) {
+        for (let i = 0; i < 150; i++) {
           let response = await fetch(
             `https://pokeapi.co/api/v2/pokemon?limit=150`
           );
           let data = await response.json();
           let pokemon = await data.results[i].name;
-          // SAMPLE_POKEMON[i].id = pokemon;
-          console.log(pokemon);
+          pokeNamesArray.push(pokemon);
+          setPokemon(pokeNamesArray);
         }
-
         for (let i = 1; i < 151; i++) {
           let imageResponse = await fetch(
             `https://pokeapi.co/api/v2/pokemon/${i}`
           );
           let imageData = await imageResponse.json();
           let pokeImages = await imageData.sprites.front_default;
-          // SAMPLE_POKEMON[i].img = pokeImages;
-          // console.log(pokeImages);
+          pokeImagesArray.push(pokeImages);
+          setPokemonImages(pokeImagesArray);
         }
-        // setCard1(arr[0]);
-        // setCard2(arr[1]);
-        // setCard3(arr[2]);
-        // setCard4(arr[3]);
-        // setCard5(arr[4]);
-        // setCard6(arr[5]);
-        // console.log(arr);
-        // console.log(card1);
-        // console.log(card2);
+
+        // setIsLoading(false);
       } catch (err) {
         console.log(err);
       }
@@ -68,47 +61,69 @@ function App() {
     // return () => {
     //   controller.abort();
     // };
-  });
+  }, []);
 
-  const items = cardOrder.map((card) => (
-    <Card key={card} cardInfo={card} onClick={handleClick} />
-  ));
+  function checkWin() {
+    if (score >= 149) {
+      setCaughtAllPokemon(true);
+      setHighScore(150);
+      setEndTime(new Date());
+
+      setTotalTime(
+        new Date(endTime - startTime)
+          .toISOString()
+          .slice(14, 20)
+          .replace(":", "m ")
+          .replace(".", "s")
+      );
+    }
+  }
+
+  function handleStart() {
+    setBattleSlideAnimation(true);
+    setTimeout(() => {
+      setStartGame(true);
+      setStartTime(new Date());
+    }, 1200);
+  }
 
   function handleClick(e) {
     shuffleCards();
     pushSelectedCards(e);
     scoreLogic(e);
+    checkWin();
+    console.log(e.target.src);
   }
 
   function shuffleCards() {
-    setCardOrder(
-      cardOrder.sort(function () {
+    let shuffled = [];
+    shuffled.push(
+      pokemon.sort(function () {
         return 0.5 - Math.random();
       })
     );
-
-    setCard1(cardOrder[0]);
-    setCard2(cardOrder[1]);
-    setCard3(cardOrder[2]);
-    setCard4(cardOrder[3]);
-    setCard5(cardOrder[4]);
-    setCard6(cardOrder[5]);
-
-    // console.log(cardOrder);
+    setPokemon(shuffled);
+    setPokemonImages(
+      pokemonImages.sort(function () {
+        return 0.5 - Math.random();
+      })
+    );
   }
 
   function pushSelectedCards(e) {
     setSelectedCards((prev) => {
-      return [...prev, e.target.textContent];
+      return [...prev, e.target.src];
     });
-    // console.log("selected: ", selectedCards);
   }
 
   function scoreLogic(e) {
-    if (selectedCards.includes(e.target.textContent)) {
+    if (selectedCards.includes(e.target.src)) {
       setHighScore(highScore > score ? highScore : score);
       setSelectedCards([]);
       setGameOver(true);
+    } else if (score >= highScore) {
+      setScore((previous) => previous + 1);
+      setHighScore((previous) => previous + 1);
     } else {
       setScore((previous) => previous + 1);
     }
@@ -117,40 +132,79 @@ function App() {
   function restartGame() {
     setGameOver(false);
     setScore(0);
+    setStartTime(new Date());
   }
 
   return (
     <>
+      <audio id="victory" src="./Audio/NewRecording.m4a" />
+
       <Title />
       <Score gameOver={gameOver} score={score} highScore={highScore} />
-      {!gameOver ? (
-        <div className="gameDiv">{items}</div>
-      ) : (
-        <GameOver
-          score={score}
-          highScore={highScore}
-          restartGame={restartGame}
-        />
-      )}
+
+      <div className="gameDiv">
+        {!startGame ? (
+          <StartGameScreen handleStart={handleStart} />
+        ) : !gameOver ? (
+          !caughtAllPokemon ? (
+            [...new Array(150)].map((e, card) => (
+              <Card
+                key={card}
+                cardInfo={card}
+                onClick={handleClick}
+                imgSrc={pokemonImages[card]}
+                imgAlt={pokemon[card]}
+              />
+            ))
+          ) : (
+            <GameComplete
+              score={score}
+              setScore={setScore}
+              setHighScore={setHighScore}
+              restartGame={restartGame}
+              setCaughtAllPokemon={setCaughtAllPokemon}
+              totalTime={totalTime}
+              setStartTime={setStartTime}
+              setSelectedCards={setSelectedCards}
+            />
+          )
+        ) : (
+          <GameOver
+            score={score}
+            highScore={highScore}
+            restartGame={restartGame}
+          />
+        )}
+        <BattleSlides battleSlideAnimation={battleSlideAnimation} />
+      </div>
     </>
   );
 }
-const SAMPLE_POKEMON = [
-  {
-    id: "Bulbasaur",
-    img:
-      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png",
-  },
-  {
-    id: "Ivysaur",
-    img:
-      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/2.png",
-  },
-];
 
 export default App;
-//If card is clicked, push that card's info into an array.
-//If a clicked card's info is in the array,
-//    set the the highescore to current score (only if current score > current high score)
-//    set score to zero
-//Randomize order by mapping the Cards into an array and returning that array???
+
+// TODO
+//DONE    Add a message for capturing all 150
+//DONE    make it possible to catch mew
+//DONE    Make a time along with highscore available to those who capture all 150
+//        save score in local storage
+//DONE    add a start game button
+//DONE    add pokemon images
+//DONE    start game function should also start a timer
+//DONE    clicking on the last pokemon should stop the timer, and the game complete screen should pop up
+//DONE    make mew available to catch, making sure it disappears when you catch it so there is not gameOver
+//            button to try again
+//        add pokemon battle music and possible an animation when you get into a battle
+//            victory music and defeat music
+//        make a folder for audio files and images
+//        make a copyright component
+//        have each pokemon make a sound when clicked
+//        display a caught pokeball next to the score???
+//DONE    randomize order of cards when clicked
+//DONE    play again? => clear selected pokemon array so you don't lose right away and set start time on play again?
+//        make score and highscore component sticky or position absolute so it moves down with you as you scroll
+//        find out why the time isn't correcting
+//        make h3's bigger and more readable
+//DONE    make sure the image alt don't have the pokemon font, so fix the h3, h2, h1 properties
+//        make the sliding thing lower or fix the camera position to the top when the button is pressed
+//        reOrganize code into their own components
