@@ -7,6 +7,7 @@ import GameOver from "./components/GameOver";
 import StartGameScreen from "./components/StartGameScreen";
 import GameComplete from "./components/GameComplete";
 import BattleSlides from "./components/BattleSlides";
+import useKonamiCode from "./components/KonamiCode";
 
 function App() {
   const [score, setScore] = useState(0);
@@ -47,6 +48,7 @@ function App() {
           );
           let imageData = await imageResponse.json();
           let pokeImages = await imageData.sprites.front_default;
+          console.log(pokeImages);
           pokeImagesArray.push(pokeImages);
           setPokemonImages(pokeImagesArray);
         }
@@ -62,6 +64,20 @@ function App() {
     //   controller.abort();
     // };
   }, []);
+
+  useKonamiCode(() => {
+    setScore(150);
+    setCaughtAllPokemon(true);
+    setEndTime(new Date());
+
+    setTotalTime(
+      new Date(endTime - startTime)
+        .toISOString()
+        .slice(14, 20)
+        .replace(":", "m ")
+        .replace(".", "s")
+    );
+  });
 
   function checkWin() {
     if (score >= 149) {
@@ -137,8 +153,6 @@ function App() {
 
   return (
     <>
-      <audio id="victory" src="./Audio/NewRecording.m4a" />
-
       <Title />
       <Score gameOver={gameOver} score={score} highScore={highScore} />
 
@@ -187,24 +201,23 @@ export default App;
 //DONE    Add a message for capturing all 150
 //DONE    make it possible to catch mew
 //DONE    Make a time along with highscore available to those who capture all 150
-//        save score in local storage
 //DONE    add a start game button
 //DONE    add pokemon images
 //DONE    start game function should also start a timer
 //DONE    clicking on the last pokemon should stop the timer, and the game complete screen should pop up
 //DONE    make mew available to catch, making sure it disappears when you catch it so there is not gameOver
 //            button to try again
+//DONE    randomize order of cards when clicked
+//DONE    play again? => clear selected pokemon array so you don't lose right away and set start time on play again?
+//DONE    make score and highscore component sticky or position absolute so it moves down with you as you scroll
+//DONE    make sure the image alt don't have the pokemon font, so fix the h3, h2, h1 properties
+//DONE    make the sliding thing lower or fix the camera position to the top when the button is pressed
 //        add pokemon battle music and possible an animation when you get into a battle
 //            victory music and defeat music
 //        make a folder for audio files and images
 //        make a copyright component
 //        have each pokemon make a sound when clicked
-//        display a caught pokeball next to the score???
-//DONE    randomize order of cards when clicked
-//DONE    play again? => clear selected pokemon array so you don't lose right away and set start time on play again?
-//        make score and highscore component sticky or position absolute so it moves down with you as you scroll
-//        find out why the time isn't correcting
-//        make h3's bigger and more readable
-//DONE    make sure the image alt don't have the pokemon font, so fix the h3, h2, h1 properties
-//        make the sliding thing lower or fix the camera position to the top when the button is pressed
 //        reOrganize code into their own components
+//        find out why the time isn't correcting
+//        save score in local storage
+//        fix cursor: pointer and z-index issue
