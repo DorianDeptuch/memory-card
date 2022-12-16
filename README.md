@@ -1,6 +1,6 @@
 # Memory Card
 
-Memory card is a Pokemon-themed test of your memory. Can you catch one of each type of pokemon without catching a double? This project was complted at part of [The Odin Project's Full-Stack Development Course]([https://www.theodinproject.com/paths/full-stack-javascript/courses/nodejs](https://www.theodinproject.com/paths/full-stack-javascript))
+Memory card is a Pokemon-themed test of your memory. Can you catch one of each type of pokemon without catching a double? This project was complted at part of [The Odin Project's Full-Stack Development Course](https://www.theodinproject.com/paths/full-stack-javascript/courses/nodejs)
 
 ## Live Preview: [https://doriandeptuch.github.io/memory-card/](https://doriandeptuch.github.io/memory-card/)
 
